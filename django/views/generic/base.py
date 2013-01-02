@@ -31,6 +31,7 @@ class View(object):
     """
 
     http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
+    dispatch_config = {}
 
     def __init__(self, **kwargs):
         """
@@ -76,11 +77,20 @@ class View(object):
         return view
 
     def dispatch(self, request, *args, **kwargs):
-        # Try to dispatch to the right method; if a method doesn't exist,
+        # Try to dispatch to the right method in consideration of
+        # request.method and dispatch_config; if a method doesn't exist,
         # defer to the error handler. Also defer to the error handler if the
         # request method isn't on the approved list.
+
         if request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+            predicates = self.dispatch_config.get(request.method.lower(), {})
+            for custom_receiver, predicate in predicates.items():
+                if predicate(request):
+                    receiver = custom_receiver
+                    break
+            else:
+                receiver = request.method.lower()
+            handler = getattr(self, receiver, self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
