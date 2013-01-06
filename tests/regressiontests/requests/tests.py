@@ -524,3 +524,21 @@ class RequestsTests(unittest.TestCase):
 
         with self.assertRaises(UnreadablePostError):
             request.body
+
+    def test_FILES_connection_error(self):
+        """
+        If wsgi.input.read() raises an exception while trying to read() the
+        POST, the exception should be identifiable (not a generic IOError).
+        """
+        class ExplodingBytesIO(BytesIO):
+            def read(self, len=0):
+                raise IOError("kaboom!")
+
+        payload = b'x'
+        request = WSGIRequest({'REQUEST_METHOD': 'POST',
+                               'CONTENT_TYPE': 'multipart/form-data; boundary=foo_',
+                               'CONTENT_LENGTH': len(payload),
+                               'wsgi.input': ExplodingBytesIO(payload)})
+
+        with self.assertRaises(UnreadablePostError):
+            request.FILES
