@@ -242,7 +242,7 @@ class MultiPartParser(object):
             if retval:
                 break
 
-        self._post.mutable = False
+        self._post._mutable = False
 
         return self._post, self._files
 
