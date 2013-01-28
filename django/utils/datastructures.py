@@ -443,6 +443,54 @@ class MultiValueDict(dict):
         return dict((key, self[key]) for key in self)
 
 
+class ImmutableMultiValueDict(MultiValueDict):
+    _mutbale = False
+
+    def __init__(self, key_to_list_mapping=(), mutable=False):
+        super(MultiValueDict, self).__init__(key_to_list_mapping)
+        self._mutable = mutable
+
+    def _assert_mutable(self):
+        if not self._mutable:
+            raise AttributeError("This ImmutableMultiValueDict instance is immutable")
+
+    def __setitem__(self, key, value):
+        self._assert_mutable()
+        super(MultiValueDict, self).__setitem__(key, value)
+
+    def __delitem__(self, key):
+        self._assert_mutable()
+        super(MultiValueDict, self).__delitem__(key)
+    
+    def setlist(self, key, list_):
+        self._assert_mutable()
+        super(MultiValueDict, self).setlist(key, list_)
+
+    def setlistdefault(self, key, default_list=None):
+        self._assert_mutable()
+        return super(MultiValueDict, self).setlistdefault(key, default_list)
+
+    def appendlist(self, key, value):
+        self._assert_mutable()
+        super(MultiValueDict, self).appendlist(key, value)
+
+    def pop(self, key, *args):
+        self._assert_mutable()
+        return super(MultiValueDict, self).pop(key, *args)
+
+    def popitem(self):
+        self._assert_mutable()
+        return super(MultiValueDict, self).popitem()
+
+    def clear(self):
+        self._assert_mutable()
+        super(MultiValueDict, self).clear()
+
+    def setdefault(self, key, default=None):
+        self._assert_mutable()
+        return super(MultiValueDict, self).setdefault(key, default)
+
+
 class ImmutableList(tuple):
     """
     A tuple-like object that raises useful errors when it is asked to mutate.
