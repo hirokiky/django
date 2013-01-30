@@ -11,7 +11,7 @@ import cgi
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
-from django.utils.datastructures import MultiValueDict
+from django.utils.datastructures import ImmutableMultiValueDict
 from django.utils.encoding import force_text
 from django.utils import six
 from django.utils.text import unescape_entities
@@ -110,7 +110,7 @@ class MultiPartParser(object):
         # HTTP spec says that Content-Length >= 0 is valid
         # handling content-length == 0 before continuing
         if self._content_length == 0:
-            return QueryDict('', mutable=True, encoding=self._encoding), MultiValueDict()
+            return QueryDict('', mutable=True, encoding=self._encoding), ImmutableMultiValueDict()
 
         # See if the handler will want to take care of the parsing.
         # This allows overriding everything if somebody wants it.
@@ -125,7 +125,7 @@ class MultiPartParser(object):
 
         # Create the data structures to be used later.
         self._post = QueryDict('', mutable=True)
-        self._files = MultiValueDict()
+        self._files = ImmutableMultiValueDict(mutable=True)
 
         # Instantiate the parser and stream:
         stream = LazyStream(ChunkIter(self._input_data, self._chunk_size))
@@ -242,7 +242,7 @@ class MultiPartParser(object):
             if retval:
                 break
 
-        self._post._mutable = False
+        self._post._mutable = self._files._mutable = False
 
         return self._post, self._files
 
