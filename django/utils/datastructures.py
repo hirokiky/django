@@ -447,7 +447,7 @@ class ImmutableMultiValueDict(MultiValueDict):
     _mutbale = False
 
     def __init__(self, key_to_list_mapping=(), mutable=False):
-        super(MultiValueDict, self).__init__(key_to_list_mapping)
+        super(ImmutableMultiValueDict, self).__init__(key_to_list_mapping)
         self._mutable = mutable
 
     def _assert_mutable(self):
@@ -456,39 +456,39 @@ class ImmutableMultiValueDict(MultiValueDict):
 
     def __setitem__(self, key, value):
         self._assert_mutable()
-        super(MultiValueDict, self).__setitem__(key, value)
+        super(ImmutableMultiValueDict, self).__setitem__(key, value)
 
     def __delitem__(self, key):
         self._assert_mutable()
-        super(MultiValueDict, self).__delitem__(key)
+        super(ImmutableMultiValueDict, self).__delitem__(key)
     
     def setlist(self, key, list_):
         self._assert_mutable()
-        super(MultiValueDict, self).setlist(key, list_)
+        super(ImmutableMultiValueDict, self).setlist(key, list_)
 
     def setlistdefault(self, key, default_list=None):
         self._assert_mutable()
-        return super(MultiValueDict, self).setlistdefault(key, default_list)
+        return super(ImmutableMultiValueDict, self).setlistdefault(key, default_list)
 
     def appendlist(self, key, value):
         self._assert_mutable()
-        super(MultiValueDict, self).appendlist(key, value)
+        super(ImmutableMultiValueDict, self).appendlist(key, value)
 
     def pop(self, key, *args):
         self._assert_mutable()
-        return super(MultiValueDict, self).pop(key, *args)
+        return super(ImmutableMultiValueDict, self).pop(key, *args)
 
     def popitem(self):
         self._assert_mutable()
-        return super(MultiValueDict, self).popitem()
+        return super(ImmutableMultiValueDict, self).popitem()
 
     def clear(self):
         self._assert_mutable()
-        super(MultiValueDict, self).clear()
+        super(ImmutableMultiValueDict, self).clear()
 
     def setdefault(self, key, default=None):
         self._assert_mutable()
-        return super(MultiValueDict, self).setdefault(key, default)
+        return super(ImmutableMultiValueDict, self).setdefault(key, default)
 
 
 class ImmutableList(tuple):
