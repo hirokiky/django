@@ -193,7 +193,7 @@ class SuccessMessageMixin(object):
     """
     def get_success_message(self, **kwargs):
         return self.success_message % kwargs
-    
+
     def create_success_message(self, request, **kwargs):
         try:
             msg = self.get_success_message(**kwargs)
@@ -214,7 +214,7 @@ class BaseCreateView(ModelFormMixin, ProcessFormView, SuccessMessageMixin):
     Using this base class requires subclassing to provide a response mixin.
     """
     success_message = _("The %(verbose_name)s was created successfully.")
-    
+
     def get(self, request, *args, **kwargs):
         self.object = None
         return super(BaseCreateView, self).get(request, *args, **kwargs)
@@ -222,7 +222,7 @@ class BaseCreateView(ModelFormMixin, ProcessFormView, SuccessMessageMixin):
     def post(self, request, *args, **kwargs):
         self.object = None
         return super(BaseCreateView, self).post(request, *args, **kwargs)
-    
+
     def form_valid(self, form):
         form_valid = super(BaseCreateView, self).form_valid(form)
         self.create_success_message(self.request, object=self.object,
@@ -245,7 +245,7 @@ class BaseUpdateView(ModelFormMixin, ProcessFormView, SuccessMessageMixin):
     Using this base class requires subclassing to provide a response mixin.
     """
     success_message = _("The %(verbose_name)s was updated successfully.")
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super(BaseUpdateView, self).get(request, *args, **kwargs)
@@ -253,7 +253,7 @@ class BaseUpdateView(ModelFormMixin, ProcessFormView, SuccessMessageMixin):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super(BaseUpdateView, self).post(request, *args, **kwargs)
-    
+
     def form_valid(self, form):
         form_valid = super(BaseUpdateView, self).form_valid(form)
         self.create_success_message(self.request, object=self.object,
@@ -303,7 +303,7 @@ class BaseDeleteView(DeletionMixin, BaseDetailView, SuccessMessageMixin):
     Using this base class requires subclassing to provide a response mixin.
     """
     success_message = _("The %(verbose_name)s was deleted.")
-    
+
     def delete(self, request, *args, **kwargs):
         response = super(BaseDeleteView, self).delete(request, *args, **kwargs)
         self.create_success_message(request, object=self.object,
