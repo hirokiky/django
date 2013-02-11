@@ -186,6 +186,15 @@ class AuthorGetQuerySetFormView(generic.edit.ModelFormMixin):
     def get_queryset(self):
         return Author.objects.all()
 
+
+class NonMessageSuccessMessageView(generic.edit.SuccessMessageMixin):
+    pass
+
+
+class InvalidMessageSuccessMessageView(generic.edit.SuccessMessageMixin):
+    success_message = 0
+
+
 class BookDetailGetObjectCustomQueryset(BookDetail):
     def get_object(self, queryset=None):
         return super(BookDetailGetObjectCustomQueryset,self).get_object(
