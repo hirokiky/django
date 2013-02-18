@@ -628,16 +628,28 @@ class BaseDateDetailView(YearMixin, MonthMixin, DayMixin, DateMixin, BaseDetailV
     Detail view of a single object on a single date; this differs from the
     standard DetailView by accepting a year/month/day in the URL.
     """
+    date_separate_unity = "daily"
+
     def get_object(self, queryset=None):
         """
         Get the object this request displays.
         """
-        year = self.get_year()
-        month = self.get_month()
-        day = self.get_day()
-        date = _date_from_string(year, self.get_year_format(),
-                                 month, self.get_month_format(),
-                                 day, self.get_day_format())
+        date_field= self.get_date_field()
+
+        if self.date_separate_unity == "yearly":
+            date = _date_from_string(self.get_year(), self.get_year_format())
+            get_until_date = self._get_next_year
+        elif self.date_separate_unity == "monthly":
+            date = _date_from_string(self.get_year(), self.get_year_format(),
+                                     self.get_month(), self.get_month_format())
+            get_until_date = self._get_next_month
+        elif self.date_separate_unity == "daily":
+            date = _date_from_string(self.get_year(), self.get_year_format(),
+                                     self.get_month(), self.get_month_format(),
+                                     self.get_day(), self.get_day_format())
+            get_until_date = self._get_next_day
+        else:
+            raise ValueError("Unknown date unit.")
 
         # Use a custom queryset if provided
         qs = queryset or self.get_queryset()
@@ -651,7 +663,14 @@ class BaseDateDetailView(YearMixin, MonthMixin, DayMixin, DateMixin, BaseDetailV
         # Filter down a queryset from self.queryset using the date from the
         # URL. This'll get passed as the queryset to DetailView.get_object,
         # which'll handle the 404
-        lookup_kwargs = self._make_single_date_lookup(date)
+        since = self._make_date_lookup_arg(date)
+        until = self._make_date_lookup_arg(get_until_date(date))
+
+        lookup_kwargs = {
+            '%s__gte' % date_field: since,
+            '%s__lt' % date_field: until,
+        }
+
         qs = qs.filter(**lookup_kwargs)
 
         return super(BaseDetailView, self).get_object(queryset=qs)
